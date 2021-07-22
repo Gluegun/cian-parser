@@ -29,6 +29,8 @@ public class SeleniumTest {
         Thread.sleep(1000);
         acceptCookies(driver);
         driver.findElement(By.cssSelector("div[data-name=CommentsButton]")).click();
+        String announceMark = driver.findElement(By.cssSelector("div[data-name=OfferValueAddedServices]")).getText();
+        String id = getId(url);
         String xpathString = "//div[contains(@class, 'comment')]";
         List<WebElement> elements = driver.findElements(By.xpath(xpathString));
         WebElement commentElement = elements.get(1);
@@ -36,7 +38,7 @@ public class SeleniumTest {
         WebElement textarea = commentElement.findElement(By.tagName("textarea"));
         Thread.sleep(1000);
         String price = driver.findElement(By.cssSelector("span[itemprop=price")).getText();
-        textarea.sendKeys(getId(url) + " - " + price);
+        textarea.sendKeys(id + " - " + price);
         List<WebElement> buttons = driver.findElements(By.tagName("button"));
         for (WebElement button : buttons) {
             if (button.getText().equalsIgnoreCase("Сохранить")) {
@@ -68,6 +70,22 @@ public class SeleniumTest {
     }
 
     @Test
+    public void testAgent() {
+        String url1 = "https://spb.cian.ru/sale/flat/257561677/";
+        String url2 = "https://spb.cian.ru/sale/flat/259452892/";
+        List<String> urls = List.of(url1, url2);
+        for (String url : urls) {
+            WebDriver driver = getWebDriver(url);
+            List<WebElement> authorElement = driver.findElements(By.cssSelector("div[data-name=AuthorAsideBrand]"));
+            String author = "";
+            for (WebElement element : authorElement) {
+                author = element.findElement(By.tagName("h2")).getText();
+            }
+            System.out.println(author);
+        }
+    }
+
+    @Test
     public void testSubstring() {
 
         String link = "https://spb.cian.ru/sale/flat/253301080/";
@@ -84,7 +102,7 @@ public class SeleniumTest {
     }
 
     private WebDriver getWebDriver(String url) {
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().maximize();

@@ -1,16 +1,25 @@
 package org.example;
 
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import lombok.extern.java.Log;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+@Log
 public class ExcelWriter {
 
     public static void writeToFile(String directory, List<Apartment> apartments) throws IOException {
@@ -31,7 +40,7 @@ public class ExcelWriter {
         createCell(header, 4, "Площадь", headerStyle);
         createCell(header, 5, "Цена", headerStyle);
         createCell(header, 6, "Ссылка", headerStyle);
-        createCell(header, 7, "Телефон", headerStyle);
+        createCell(header, 7, "Конкурент", headerStyle);
 
         CellStyle style = workbook.createCellStyle();
         style.setWrapText(true);
@@ -40,6 +49,7 @@ public class ExcelWriter {
         for (int i = 0; i < apartments.size(); i++) {
             Apartment apartment = apartments.get(i);
             Row row = sheet.createRow(rowNumber++);
+            String competitorInfo = apartment.getAuthor() + " " + apartment.getMark() + " " + apartment.getPhoneNumber();
             createCell(row, 0, apartment.getId(), style);
             createCell(row, 1, apartment.getAddress(), style);
             createCell(row, 2, apartment.getFlour(), style);
@@ -47,7 +57,7 @@ public class ExcelWriter {
             createCell(row, 4, String.valueOf(apartment.getSqr()), style);
             createCell(row, 5, String.valueOf(apartment.getPrice()), style);
             createCell(row, 6, apartment.getLink(), style);
-            createCell(row, 7, apartment.getPhoneNumber(), style);
+            createCell(row, 7, competitorInfo, style);
         }
         Path path = Paths.get(directory, "/apartments.xlsx");
 
@@ -60,6 +70,8 @@ public class ExcelWriter {
         outputStream.flush();
         workbook.close();
         outputStream.close();
+
+        log.info("excel file successfully created and filled");
     }
 
     private static Cell createCell(Row row, int columnNumber, String value, CellStyle style) {
